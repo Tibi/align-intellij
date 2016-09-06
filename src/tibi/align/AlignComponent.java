@@ -29,13 +29,17 @@ public class AlignComponent implements ApplicationComponent {
 		SelectionModel selectionModel = editor.getSelectionModel();
 		if (selectionModel.getSelectedText() == null) return;
 		Document document = editor.getDocument();
-		final int startOffset = document.getLineStartOffset(document.getLineNumber(selectionModel.getSelectionStart()));
-		final int endOffset = document.getLineEndOffset(document.getLineNumber(selectionModel.getSelectionEnd()));
+		int selectionStart = selectionModel.getSelectionStart();
+		final int startOffset = document.getLineStartOffset(document.getLineNumber(selectionStart));
+		int selectionEnd = selectionModel.getSelectionEnd();
+		final int endOffset = document.getLineEndOffset(document.getLineNumber(selectionEnd));
 		final String text = document.getText(new TextRange(startOffset, endOffset));
 
 		String newText = Align.align(text, separator);
 
-		ApplicationManager.getApplication().runWriteAction(() ->
-				editor.getDocument().replaceString(startOffset, endOffset, newText));
+		ApplicationManager.getApplication().runWriteAction(() -> {
+			editor.getDocument().replaceString(startOffset, endOffset, newText);
+			selectionModel.setSelection(selectionStart, selectionEnd);
+		});
 	}
 }
