@@ -6,14 +6,19 @@ import collection.mutable.ArrayBuffer
 
 object Align {
 
-  def align(source: String, separator: String = ",", addSpaceAfter: Boolean = true): String = {
+  def align(source: String, separator: String = ","): String = {
     val cells = readMatrix(source, separator)
     val widths = findColumnWidths(cells)
     //println("sizes = " + widths)
     val res = pad(cells, widths)
     // output should use the same line separator as the input
     val lineSep = getLineSeparator(source)
-    printMatrix(res, separator + (if (addSpaceAfter) " " else ""), lineSep.getOrElse("\n"))
+    val sep = separator match {
+      case "," => ", "
+      case "=" => " = "
+      case _ => separator
+    }
+    printMatrix(res, sep, lineSep.getOrElse("\n"))
   }
 
   /**
